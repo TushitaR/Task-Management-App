@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subject, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,14 +9,17 @@ import { Observable } from 'rxjs';
 export class ApiService {
 
   constructor(private _http: HttpClient) { }
+  taskAdded = new Subject<void>(); // Subject to emit events when a task is added
+
   addTask(taskForm: FormGroup): Observable<any> {
     if (taskForm.valid) {
-      return this._http.post('http://localhost:3000/tasks', taskForm.value);
+      return this._http.post('http://localhost:3000/tasks', taskForm.value).pipe(
+        tap(() => {
+          this.taskAdded.next(); // Emit event when task is added successfully
+        })
+      );
     }
-    // Return an observable with an error if the form is invalid
-    return new Observable(observer => {
-      observer.error('Form is invalid');
-    });
+    return throwError('Form is invalid');
   }
 
   updateTask(id: string, data: any): Observable<any> {

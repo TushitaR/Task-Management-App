@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, NgModule, OnInit } from '@angular/core';
 import {MatCardModule} from '@angular/material/card';
 import { ApiService } from '../services/api.service';

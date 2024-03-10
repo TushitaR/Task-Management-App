@@ -53,23 +53,23 @@ export class AddTaskComponent implements OnInit {
     });
   }
 
-  creationDateValidator(control: FormControl) {
-    const creationDate = new Date(control.value);
-    const currentDate = new Date();
-    if (creationDate > currentDate) {
-      return { futureDate: true };
-    }
-    return null;
-  }
+  // Validator for ensuring the task creation date is not in the future
+creationDateValidator(control: FormControl) {
+  const creationDate = new Date(control.value); // Extract creation date from FormControl
+  const currentDate = new Date(); // Get current date
+  
+  // Return validation error if creation date is in the future, otherwise return null
+  return creationDate > currentDate ? { futureDate: true } : null;
+}
 
-  dueDateValidator(control: FormControl) {
-    const dueDate = new Date(control.value);
-    const currentDate = new Date();
-    if (dueDate < currentDate) {
-      return { pastDate: true };
-    }
-    return null;
-  }
+// Validator for ensuring the task due date is not in the past
+dueDateValidator(control: FormControl) {
+  const dueDate = new Date(control.value); // Extract due date from FormControl
+  const currentDate = new Date(); // Get current date
+  
+  // Return validation error if due date is in the past, otherwise return null
+  return dueDate < currentDate ? { pastDate: true } : null;
+}
 
   ngOnInit() {
     if (this.data && this.data.task) {
@@ -82,6 +82,7 @@ export class AddTaskComponent implements OnInit {
         dueDate: this.task.dueDate
       });
     }
+    this.taskSubmit();
   }
 
   taskSubmit() {
@@ -89,30 +90,30 @@ export class AddTaskComponent implements OnInit {
       this.apiService.updateTask(this.task.id, this.taskForm.value).subscribe(
         (response: any) => {
           this.toastr.success('Task updated successfully!!');
-          this.dialog.closeAll();
+          this.dialogRef.close(true); // Pass true to indicate successful update
           console.log('API Response:', response);
         },
         (error: any) => {
-          // Handle error if necessary
+          console.error('Error updating task:', error);
         }
       );
     } else {
-      this.submit();
+      this.submit(); // Call submit function for adding a new task
     }
-  }
+  }  
 
   submit() {
     this.apiService.addTask(this.taskForm).subscribe(
       (response: any) => {
         this.toastr.success('Task added successfully!!');
-        this.dialog.closeAll();
+        this.dialogRef.close(true);
+        window.location.reload();
         console.log('API Response:', response);
       },
       (error: any) => {
-        // Handle error if necessary
+        console.error('Error adding task:', error); // Log any errors that occur during task addition
       }
     );
-    
   }
 
   closeForm() {

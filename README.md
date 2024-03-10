@@ -1,6 +1,6 @@
 ## Start the application locally:
 1.	Clone the project locally:
-    Clone the project repository using the provided link:
+    Clone the project repository using the provided link: 
 2.	Open the project in an editor:
     Open the project directory in a code editor such as Visual Studio Code or any editor of your choice.
 3.	Start the application:

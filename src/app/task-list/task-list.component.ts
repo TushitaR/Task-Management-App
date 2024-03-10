@@ -1,4 +1,4 @@
-import { Component, EventEmitter, NgModule, OnInit, Output } from '@angular/core';
+import { Component, NgModule, OnInit, Output } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ApiService } from '../services/api.service';
 import { CommonModule } from '@angular/common';
@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { AddTaskComponent } from '../add-task/add-task.component';
 import { DeleteTaskComponent } from '../delete-task/delete-task.component';
+import { Subscription } from 'rxjs';
 
 export interface PeriodicElement {
   name: string;
@@ -30,12 +31,17 @@ export class TaskListComponent implements OnInit {
   tasks: any[] = []; // Initialize tasks as an empty array
   dataSource = new MatTableDataSource<any>(this.tasks);
   id!:string;
-  constructor(private toastr: ToastrService, private dialog: MatDialog, private router: Router, private apiService: ApiService) { }
+  private taskAddedSubscription!: Subscription;
+  constructor(private dialog: MatDialog, private router: Router, private apiService: ApiService) { }
   ngOnInit(): void {
-    if(this.tasks) {
-      console.log(this.tasks);
-      this.getTasklist();
-    }
+    this.getTasklist(); // Call getTasklist() on component initialization
+    // this.taskAddedSubscription = this.apiService.taskAdded.subscribe(() => {
+    //   this.getTasklist(); // Refresh task list when a new task is added
+    // });
+  }
+
+  ngOnDestroy(): void {
+    this.taskAddedSubscription.unsubscribe(); // Unsubscribe from taskAdded event to prevent memory leaks
   }
 
   navigateToTask(taskId: number): void {
@@ -48,6 +54,7 @@ export class TaskListComponent implements OnInit {
     this.apiService.getTaskList().subscribe(
       (data: any) => {
         this.tasks = data;
+        this.dataSource.data = this.tasks; // Update dataSource with new tasks data
         console.log('Tasks Data:', data);
       },
       (error: any) => {
@@ -62,22 +69,27 @@ export class TaskListComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.getTasklist();
+        this.getTasklist(); // Refresh task list after update
       }
     });
   }
   
-  deleteTask(id:string) {
+  //takes the ID of the task to be deleted as input.
+deleteTask(id: string) {
+    // Opens dialog to confirm task deletion, passing the task ID as data to dialog.
     const dialogRef = this.dialog.open(DeleteTaskComponent, {
-      data: { id: id }
+        data: { id: id }
     });
-  
+
+    // Subscribe to the afterClosed event of the dialog, which emits the result when the dialog is closed.
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.getTasklist();
-      }
+        // Check if the result is true, indicating that the user confirmed the deletion.
+        if (result) {
+            // If deletion is confirmed, refresh the task list to reflect the changes after deletion.
+            this.getTasklist();
+        }
     });
-  }
+}
 
 }
 
