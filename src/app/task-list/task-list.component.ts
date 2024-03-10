@@ -31,17 +31,9 @@ export class TaskListComponent implements OnInit {
   tasks: any[] = []; // Initialize tasks as an empty array
   dataSource = new MatTableDataSource<any>(this.tasks);
   id!:string;
-  private taskAddedSubscription!: Subscription;
   constructor(private dialog: MatDialog, private router: Router, private apiService: ApiService) { }
   ngOnInit(): void {
-    this.getTasklist(); // Call getTasklist() on component initialization
-    // this.taskAddedSubscription = this.apiService.taskAdded.subscribe(() => {
-    //   this.getTasklist(); // Refresh task list when a new task is added
-    // });
-  }
-
-  ngOnDestroy(): void {
-    this.taskAddedSubscription.unsubscribe(); // Unsubscribe from taskAdded event to prevent memory leaks
+    this.getTasklist();
   }
 
   navigateToTask(taskId: number): void {
