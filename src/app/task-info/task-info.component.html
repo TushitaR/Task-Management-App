@@ -1,0 +1,17 @@
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <mat-card class="example-card" [ngClass]="{'col-md-6': !isLoading && !isError, 'col-12': isLoading || isError}">
+            <mat-card-content>
+                <h4 class="text-center">{{task?.taskName}}</h4>
+                <h6>{{task?.taskDesc}}</h6>
+                <h6>Status: {{task?.status}}</h6>
+                <div class="d-flex justify-content-between">
+                    <h6>Creation Date: {{ task?.dateCreated | date:'yyyy-MM-dd' }}</h6>
+                    <h6>Due Date: {{task?.dueDate | date:'yyyy-MM-dd'}}</h6>
+                </div>                
+            </mat-card-content>
+        </mat-card>
+        <div *ngIf="isLoading">Loading...</div>
+        <div *ngIf="isError">Failed to load task details.</div>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+<div class="container">
+    <div mat-dialog-title>
+        <h4 class="text-center py-4">Create Task</h4>
+    </div>
+    <form [formGroup]="taskForm" (ngSubmit)="taskSubmit()">
+        <div class="row">
+            <div class="col-md-6">
+                <mat-form-field>
+                    <mat-label>Title</mat-label>
+                    <input matInput formControlName="taskName" input="text" required>
+                    <mat-error *ngIf="taskForm.get('taskName')?.invalid">{{ getTaskNameErrorMessage() }}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-md-6">
+                <mat-form-field>
+                    <mat-label>Description</mat-label>
+                    <input matInput input="text" formControlName="taskDesc" required>
+                    <mat-error *ngIf="taskForm.get('taskDesc')?.invalid">{{ getTaskDescErrorMessage() }}</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <mat-form-field>
+                    <mat-label>Creation Date</mat-label>
+                    <input matInput [matDatepicker]="pickercreated" required formControlName="dateCreated">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickercreated"></mat-datepicker-toggle>
+                    <mat-datepicker #pickercreated></mat-datepicker>
+                    <mat-error *ngIf="taskForm.get('dateCreated')?.hasError('required')">
+                        Creation Date is required
+                    </mat-error>
+                    <mat-error *ngIf="taskForm.get('dateCreated')?.hasError('futureDate')">
+                        Creation Date cannot be in the future
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-md-6">
+                <mat-form-field>
+                    <mat-label>Due Date</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="dueDate" required>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-error *ngIf="taskForm.get('dueDate')?.hasError('required')">
+                        Due Date is required
+                    </mat-error>
+                    <mat-error *ngIf="taskForm.get('dueDate')?.hasError('pastDate') && taskForm.get('dueDate')?.touched">
+                        Due Date cannot be in the past
+                    </mat-error>
+                </mat-form-field>                                              
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mt-2">
+                <mat-form-field>
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="status" [errorStateMatcher]="matcher">
+                        <mat-option value="New">New</mat-option>
+                        <mat-option value="Complete">In Progress</mat-option>
+                        <mat-option value="Pending">Completed</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="taskForm.get('status')?.invalid">
+                        You must make a selection
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+        <div mat-dialog-actions class="action" class="centered-actions my-3">
+            <button mat-raised-button class="mr-2" color="primary" type="submit">{{ data && data.isUpdate ? 'Update' : 'Save' }}</button>
+            <button mat-raised-button (click)="closeForm()">Cancel</button>
+        </div>
+    </form>
+</div>
